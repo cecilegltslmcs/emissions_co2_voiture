@@ -7,10 +7,6 @@ from sklearn.ensemble import RandomForestRegressor
 def data_preparation(PATH):
     df = pd.read_csv(PATH)
     df = df[df["Energie"] != 'electric']
-    df["Autonomie elec"] = df["Autonomie elec"].fillna(0)
-    df["Puissance nominale électrique"] = df["Puissance nominale électrique"].fillna(0)
-    df["Conso elec"] = df["Conso elec"].fillna(0)
-    df["Autonomie elec urbain"] = df["Autonomie elec urbain"].fillna(0)
 
     categorical = list(df.dtypes[df.dtypes == 'object'].index)
     numerical = [i for i in list(df.columns) if i not in categorical]

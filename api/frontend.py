@@ -1,4 +1,5 @@
 import streamlit as st
+from unidecode import unidecode
 import requests
 import json
 
@@ -52,11 +53,15 @@ with tab2:
                                 ('Inférieure', 'Moyenne Supérieure', 'Moyenne Inférieure', 'Luxe', 'Supérieure', 'Economique'),
                                 index=None,
                                 placeholder="Choisissez une option...")
-            type_de_boite = st.radio("Type de boîte : ",
-                                ('Automatique', 'Mécanique', 'Variation continue'))
+            type_de_boite = st.selectbox("Type de boîte : ",
+                                ('Automatique', 'Mécanique', 'Variation continue'),
+                                index=None,
+                                placeholder="Choisissez une option...")
             nombre_rapports = st.slider("Nombre de vitesses : ", 0, 9, 6)
-            bonus_malus = st.radio("Lors de son achat le véhicule bénéficie-t-il du",
-                                ('Malus', 'Bonus', 'Neutre', 'Autre'))
+            bonus_malus = st.selectbox("Lors de son achat le véhicule bénéficie-t-il du",
+                                ('Malus', 'Bonus', 'Neutre', 'Autre'),
+                                index=None,
+                                placeholder="Choisissez une option...")
         
         with c2:
             cylindree = st.number_input("Cylindrée",
@@ -86,7 +91,7 @@ with tab2:
                                                 value=None,
                                                 placeholder="Entrez une valeur décimale (en L/100km)",
                                                 help="Exprimée en L pour 100 km. Elle correspond à une circulation en ville (max 56.5 km/h).")
-            conso_vitesse_moyenne = st.number_input("Consommation à vitesse moyenne :",
+            conso_vitesse_moyenne = st.number_input("Consommation à moyenne vitesse :",
                                                     value=None,
                                                     placeholder="Entrez une valeur décimale (en L/100km)",
                                                     help="Exprimée en L pour 100 km. Elle correspond à une circulation en milieu extra-urbain (max 76.6 km/h).")
@@ -104,5 +109,39 @@ with tab2:
                                                 help="Exprimée en L pour 100 km.")
             
         submitted = st.form_submit_button("Envoyer")
+        
+    if submitted:
+        carrosserie = carrosserie.replace(" ", "_").lower()
+        gamme = gamme.replace(" ", "_").lower()
+        type_de_boite = type_de_boite.replace(" ", "_").lower()
+        
+        car = {
+            "Marque" : marque.lower(),
+            "Modèle" : modele.lower(),
+            "Energie" : energie.lower(),
+            "Carrosserie" : carrosserie,
+            "Cylindrée" : cylindree,
+            "Gamme" : unidecode(gamme),
+            "Puissance fiscale" : puissance_fiscale,
+            "Puissance maximale" : puissance_max,
+            "Poids à vide" : poids,
+            "Rapport poids-puissance" : float(poids/puissance_max),
+            "Type de boîte" : decode(type_de_boite),
+            "Nombre rapports" : nombre_rapports,
+            "Conso basse vitesse" : float(conso_basse_vitesse),
+            "Conso moyenne vitesse" : float(conso_vitesse_moyenne),
+            "Conso haute vitesse" : float(conso_haute_vitesse),
+            "Conso T-haute vitesse" : float(conso_tres_haute_vitesse),
+            "Conso vitesse mixte" : float(conso_vitesse_mixte)
+        }
     
-st.text("Réalisée par Cécile Guillot")
+        json_car = json.dumps(car, indent=4)
+        headers = {"Content-Type": "application/json"}
+        req = requests.post("http://127.0.0.1:8000/predict",
+                            data = json_car,
+                            headers = headers)
+        result = req.json()
+            
+        st.write(f"Emission de CO2 estimée: {result} g/km.")
+    
+# st.text("Réalisée par Cécile Guillot")
