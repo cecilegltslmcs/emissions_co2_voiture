@@ -1,3 +1,5 @@
 datasets/
 scripts/__pycache__
 api/__pycache__
+myenv/
+.vscode
