@@ -29,7 +29,7 @@ with tab2:
                                     'Porsche', 'Ford', 'Peugeot', 'Fiat', 'Lexus', 'Toyota', 'Suzuki', 'Hyundai',
                                     'Land Rover', 'Volvo', 'Audi', 'Rolls Royce', 'Honda', 'M.G.', 'Mitsubishi',
                                     'Cupra', 'Smart', 'Tesla', 'Jaguar', 'Lamborghini', 'Ferrari', 'Alpine',
-                                    'Maserati', 'Subaru', 'Ssangyong', 'Bentley']),                                
+                                    'Maserati', 'Subaru', 'Ssangyong', 'Bentley']),
                                     index=None,
                                     placeholder="Choisissez une option...",
                                     help=" Cette information est présente dans la case D1 de la carte grise du véhicule.")
@@ -62,7 +62,7 @@ with tab2:
                                 ('Malus', 'Bonus', 'Neutre', 'Autre'),
                                 index=None,
                                 placeholder="Choisissez une option...")
-        
+
         with c2:
             cylindree = st.number_input("Cylindrée",
                                         value=None,
@@ -86,7 +86,7 @@ with tab2:
                                     min_value=800,
                                     max_value=2800,
                                     help="Exprimée en kilogrammes. Cette information est présente dans la case G1 de la carte grise du véhicule.")
-            
+
             conso_basse_vitesse = st.number_input("Consommation à basse vitesse :",
                                                 value=None,
                                                 placeholder="Entrez une valeur décimale (en L/100km)",
@@ -107,14 +107,14 @@ with tab2:
                                                 value=None,
                                                 placeholder="Entrez une valeur décimale (en L/100km)",
                                                 help="Exprimée en L pour 100 km.")
-            
+
         submitted = st.form_submit_button("Envoyer")
-        
+
     if submitted:
         carrosserie = carrosserie.replace(" ", "_").lower()
         gamme = gamme.replace(" ", "_").lower()
         type_de_boite = type_de_boite.replace(" ", "_").lower()
-        
+
         car = {
             "Marque" : marque.lower(),
             "Modèle" : modele.lower(),
@@ -126,7 +126,7 @@ with tab2:
             "Puissance maximale" : puissance_max,
             "Poids à vide" : poids,
             "Rapport poids-puissance" : float(poids/puissance_max),
-            "Type de boîte" : decode(type_de_boite),
+            "Type de boîte" : type_de_boite,
             "Nombre rapports" : nombre_rapports,
             "Conso basse vitesse" : float(conso_basse_vitesse),
             "Conso moyenne vitesse" : float(conso_vitesse_moyenne),
@@ -134,14 +134,14 @@ with tab2:
             "Conso T-haute vitesse" : float(conso_tres_haute_vitesse),
             "Conso vitesse mixte" : float(conso_vitesse_mixte)
         }
-    
+
         json_car = json.dumps(car, indent=4)
         headers = {"Content-Type": "application/json"}
         req = requests.post("http://127.0.0.1:8000/predict",
                             data = json_car,
                             headers = headers)
         result = req.json()
-            
+
         st.write(f"Emission de CO2 estimée: {result} g/km.")
-    
+
 # st.text("Réalisée par Cécile Guillot")

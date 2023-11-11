@@ -1,9 +1,11 @@
 import pickle
 import numpy as np
 from fastapi import FastAPI
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.feature_extraction import DictVectorizer
 
 def load_model(input_path: str)-> (DictVectorizer, RandomForestRegressor):
-    with open(input_path) as f_in:
+    with open(input_path, 'rb') as f_in:
         dv, model = pickle.load(f_in)
     return dv, model
 
