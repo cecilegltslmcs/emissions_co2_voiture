@@ -2,11 +2,13 @@ import streamlit as st
 from unidecode import unidecode
 import requests
 import json
+import pandas as pd
 
 st.title("Estimation des émissions de CO2")
 
 st.image("https://cdn.pixabay.com/photo/2020/01/15/09/13/co2-4767388_1280.jpg")
 
+car_option = pd.read_csv("data_car.csv")
 
 tab1, tab2 = st.tabs(["Mode d'emploi", "Formulaire"])
 
@@ -24,33 +26,26 @@ with tab2:
         c1, c2 = st.columns(2)
         with c1:
             marque = st.selectbox("Marque du véhicule : ",
-                                    sorted(['Renault', 'Mazda', 'DS', 'B.M.W.', 'Skoda', 'Jeep', 'Mini', 'Citroen', 'Nissan',
-                                    'Volkswagen', 'Alfa Romeo', 'Opel', 'Dacia', 'Kia', 'Mercedes', 'Seat',
-                                    'Porsche', 'Ford', 'Peugeot', 'Fiat', 'Lexus', 'Toyota', 'Suzuki', 'Hyundai',
-                                    'Land Rover', 'Volvo', 'Audi', 'Rolls Royce', 'Honda', 'M.G.', 'Mitsubishi',
-                                    'Cupra', 'Smart', 'Tesla', 'Jaguar', 'Lamborghini', 'Ferrari', 'Alpine',
-                                    'Maserati', 'Subaru', 'Ssangyong', 'Bentley']),
+                                    options=car_option["Marque"].unique(),
                                     index=None,
                                     placeholder="Choisissez une option...",
                                     help=" Cette information est présente dans la case D1 de la carte grise du véhicule.")
             modele = st.selectbox("Modèle du véhicule : ",
-                                    ("Kangoo", "Clio"),
+                                    options=car_option["Modèle"].unique(),
                                     index=None,
                                     placeholder="Choisissez une option...",
                                     help="Identique à la dénomination commerciale du véhicule présente dans la case D2 de la carte grise du véhicule.")
             energie = st.selectbox("Source d'énergie : ",
-                                    ('Essence', 'Elec+Essenc HR', 'Ess+Elec HNR', 'Gazole',
-                                    'Gaz+Elec HNR', 'Elec+Gazole HR', 'Ess+G.P.L.', 'Superéthanol', 'Gaz Nat.Veh'),
+                                    options=car_option["Energie"].unique(),
                                     index=None,
                                     placeholder="Choisissez une option...",
                                     help="La mention HR signifie Hybride Rechargeable et HNR Hybride Non Rechargeable.  Cette information est présente dans la case P3 de la carte grise du véhicule.")
             carrosserie = st.selectbox("Carrosserie :",
-                                        ('Combispace', 'Ts terrains/Chemins', 'Monospace compact', 'Berline', 'Break',
-                                        'Coupé', 'Minibus', 'Cabriolet', 'Monospace', 'Minispace'),
+                                        options=car_option["Carrosserie"].unique(),
                                         index=None,
                                         placeholder="Choisissez une option...")
             gamme = st.selectbox("Gamme du véhicule :",
-                                ('Inférieure', 'Moyenne Supérieure', 'Moyenne Inférieure', 'Luxe', 'Supérieure', 'Economique'),
+                                options=car_option["Gamme"].unique(),
                                 index=None,
                                 placeholder="Choisissez une option...")
             type_de_boite = st.selectbox("Type de boîte : ",
@@ -119,9 +114,9 @@ with tab2:
             "Marque" : marque.lower(),
             "Modèle" : modele.lower(),
             "Energie" : energie.lower(),
-            "Carrosserie" : carrosserie,
+            "Carrosserie" : carrosserie.lower(),
             "Cylindrée" : cylindree,
-            "Gamme" : unidecode(gamme),
+            "Gamme" : unidecode(gamme.lower()),
             "Puissance fiscale" : puissance_fiscale,
             "Puissance maximale" : puissance_max,
             "Poids à vide" : poids,
@@ -142,6 +137,6 @@ with tab2:
                             headers = headers)
         result = req.json()
 
-        st.write(f"Emission de CO2 estimée: {result} g/km.")
+        st.subheader(f"Emission de CO2 estimée : {result} g/km.")
 
 # st.text("Réalisée par Cécile Guillot")
