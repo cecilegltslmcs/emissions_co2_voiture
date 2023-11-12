@@ -133,6 +133,7 @@ with tab2:
         json_car = json.dumps(car, indent=4)
         headers = {"Content-Type": "application/json"}
         req = requests.post("http://127.0.0.1:8000/predict",
+                            timeout = 10,
                             data = json_car,
                             headers = headers)
         result = req.json()
