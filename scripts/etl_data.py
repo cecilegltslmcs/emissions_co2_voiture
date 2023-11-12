@@ -4,7 +4,7 @@ import io
 import sqlite3
 
 def extract(url):
-    r = requests.get(url)
+    r = requests.get(url, timeout=10)
     r.raise_for_status()
     data = r.content.decode("utf-8")
     df = pd.read_csv(io.StringIO(data))
