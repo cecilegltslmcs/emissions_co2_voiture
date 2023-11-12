@@ -140,4 +140,4 @@ with tab2:
 
         st.subheader(f"Emission de CO2 estimée : {result} g/km.")
 
-# st.text("Réalisée par Cécile Guillot")
+st.text("Réalisée par Cécile Guillot")
